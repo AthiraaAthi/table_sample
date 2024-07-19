@@ -97,16 +97,20 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
     fetchData();
   }
 
-  fetchData() async {
-    List<Map<String, dynamic>> entries = await tableDb.getAllEntries();
+  void fetchData() async {
+    List<Map<String, dynamic>> entries = await tableDb.fetchEntries();
     setState(() {
-      enteredvalues = entries.map((entry) {
-        return {
-          'amount': entry['amount'].toString(), // Ensure values are strings
-          'month': entry['month'].toString(),
-          'category': entry['category'].toString(),
-        };
-      }).toList();
+      enteredvalues = entries
+          .map((entry) {
+            return {
+              "amount": entry['amount'].toString(),
+              "month": entry['month'].toString(),
+              "year": entry['year'].toString(),
+              "category": entry['category'].toString(),
+            };
+          })
+          .toList()
+          .cast<Map<String, String>>();
     });
   }
 
@@ -210,7 +214,7 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Padding(
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.only(right: 70, left: 10),
                             child: Text(
                               value,
                               style: TextStyle(
@@ -245,7 +249,7 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Padding(
-                            padding: const EdgeInsets.all(10),
+                            padding: EdgeInsets.only(right: 50, left: 10),
                             child: Text(
                               value,
                               style: TextStyle(
@@ -289,7 +293,7 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Padding(
-                              padding: const EdgeInsets.all(10),
+                              padding: EdgeInsets.only(right: 50, left: 10),
                               child: Text(
                                 value,
                                 style: TextStyle(
@@ -334,7 +338,8 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                                     return DropdownMenuItem<String>(
                                       value: category.title,
                                       child: Padding(
-                                        padding: const EdgeInsets.all(10),
+                                        padding: EdgeInsets.only(
+                                            right: 50, left: 10),
                                         child: Text(
                                           category.title,
                                           style: TextStyle(
@@ -464,7 +469,8 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                                   return DropdownMenuItem<String>(
                                     value: category.title,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(10),
+                                      padding:
+                                          EdgeInsets.only(right: 200, left: 10),
                                       child: Text(
                                         category.title,
                                         style: TextStyle(
@@ -537,6 +543,58 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                 height: 20,
               ),
               InkWell(
+                // onTap: () async {
+                //   setState(() async {
+                //     String enteredAmount = amountController.text;
+                //     if (dropDownMonthOrWeekValue == 'monthly') {
+                //       Map<String, String> entry = {
+                //         "amount": enteredAmount,
+                //         "month": "$dropDownMonthValue $dropDownValue",
+                //         "category": selectedCategory,
+                //       };
+                //       await tableDb.insertEntry(entry);
+                //       fetchData();
+
+                //       // enteredvalues.add({
+                //       //   "amount": enteredAmount,
+                //       //   "month": "$dropDownMonthValue  $dropDownValue",
+                //       //   "category": selectedCategory,
+                //       // });
+                //       setState(() {
+                //         enteredvalues.add(entry);
+                //         dropDownMonthValue = "month";
+                //         dropDownValue = "year";
+                //       });
+                //       amountController.clear();
+                //     } else if (dropDownMonthOrWeekValue == 'weekly') {
+                //       List<String> dates = getDatesInRange(
+                //           startDateController.text, endDateController.text);
+                //       for (String date in dates) {
+                //         // enteredvalues.add({
+                //         //   "amount": enteredAmount,
+                //         //   "month": date,
+                //         //   "category": selectedCategory,
+                //         // });
+                //         Map<String, String> entry = {
+                //           "amount": enteredAmount,
+                //           "month": date,
+                //           "category": selectedCategory,
+                //         };
+
+                //         await tableDb.insertEntry(entry);
+                //         fetchData();
+
+                //         setState(() {
+                //           enteredvalues.add(entry);
+                //         });
+                //       }
+                //       startDateController.clear();
+                //       endDateController.clear();
+                //     }
+                //     amountController
+                //         .clear(); // Clear the text field after submission
+                //   });
+                // },
                 onTap: () async {
                   setState(() async {
                     String enteredAmount = amountController.text;
@@ -544,16 +602,12 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                       Map<String, String> entry = {
                         "amount": enteredAmount,
                         "month": "$dropDownMonthValue $dropDownValue",
+                        "year": dropDownValue,
                         "category": selectedCategory,
                       };
                       await tableDb.insertEntry(entry);
                       fetchData();
 
-                      // enteredvalues.add({
-                      //   "amount": enteredAmount,
-                      //   "month": "$dropDownMonthValue  $dropDownValue",
-                      //   "category": selectedCategory,
-                      // });
                       setState(() {
                         enteredvalues.add(entry);
                         dropDownMonthValue = "month";
@@ -564,14 +618,10 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                       List<String> dates = getDatesInRange(
                           startDateController.text, endDateController.text);
                       for (String date in dates) {
-                        // enteredvalues.add({
-                        //   "amount": enteredAmount,
-                        //   "month": date,
-                        //   "category": selectedCategory,
-                        // });
                         Map<String, String> entry = {
                           "amount": enteredAmount,
                           "month": date,
+                          "year": " ",
                           "category": selectedCategory,
                         };
 
@@ -589,6 +639,7 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                         .clear(); // Clear the text field after submission
                   });
                 },
+
                 child: Container(
                   height: 45,
                   width: 200,
@@ -610,100 +661,167 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
               SizedBox(
                 height: 20,
               ),
-              DataTable(
-                dataRowMaxHeight: 60,
-                columnSpacing: 30,
-                border: TableBorder.all(color: Colors.grey, width: 0.5),
-                columns: [
-                  DataColumn(
-                      label: Text(
-                    dropDownMonthOrWeekValue == "monthly"
-                        ? "month"
-                        : "date", //changed table date column according to week or month selection
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13),
-                  )),
-                  DataColumn(
-                      label: Text(
-                    'category',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13),
-                  )),
-                  DataColumn(
-                      label: InkWell(
-                    onTap: () {},
-                    child: Text(
-                      'amount',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13),
-                    ),
-                  )),
-                  DataColumn(
-                      label: InkWell(
-                    onTap: () {},
-                    child: Text(
-                      'action',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13),
-                    ),
-                  )),
-                ],
-                rows: enteredvalues.map<DataRow>((entry) {
-                  return DataRow(cells: [
-                    DataCell(Text(entry['month'] ?? '')),
-                    DataCell(Text(entry['category'] ?? '')),
-                    DataCell(Text(entry['amount'] ?? '')),
-                    DataCell(Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: InkWell(
-                            /////////////////FOR EDIT DIALOG
-                            onTap: () {
-                              _showEditDialog(
-                                  entry, enteredvalues.indexOf(entry));
-                            },
-                            child: Text(
-                              'edit',
-                              style: TextStyle(
-                                  color: Colors.green, fontSize: buttonSize),
-                            ),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            String amountToDelete = entry['amount']!;
-                            String monthToDelete = entry['month']!;
-                            String categoryToDelete = entry['category']!;
-
-                            await tableDb.deleteEntry(amountToDelete,
-                                monthToDelete, categoryToDelete);
-                            fetchData();
-
-                            setState(() {
-                              enteredvalues
-                                  .remove(entry); // Remove the selected entry
-                            });
-                          },
-                          child: Text(
-                            'delete',
-                            style: TextStyle(
-                                color: Colors.red, fontSize: buttonSize),
-                          ),
-                        )
+              enteredvalues.isEmpty
+                  ? Center(
+                      child: Padding(
+                      padding: EdgeInsets.only(top: 100),
+                      child: Text("No Data Available"),
+                    ))
+                  : DataTable(
+                      dataRowMaxHeight: 60,
+                      columnSpacing: 30,
+                      border: TableBorder.all(color: Colors.grey, width: 0.5),
+                      columns: [
+                        DataColumn(
+                            label: Text(
+                          dropDownMonthOrWeekValue == "monthly"
+                              ? "month"
+                              : "date", //changed table date column according to week or month selection
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'category',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'amount',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'action',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13),
+                        )),
                       ],
-                    )),
-                  ]);
-                }).toList(),
-              ),
+                      rows: enteredvalues.map<DataRow>((entry) {
+                        return DataRow(cells: [
+                          DataCell(
+                            Text(entry['month'] ?? ''),
+                          ),
+                          DataCell(Text(entry['category'] ?? '')),
+                          DataCell(Text(entry['amount'] ?? '')),
+                          DataCell(Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  /////////////////FOR EDIT DIALOG
+                                  onTap: () {
+                                    _showEditDialog(
+                                        entry, enteredvalues.indexOf(entry));
+                                  },
+                                  child: Text(
+                                    'edit',
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontSize: buttonSize),
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                // onTap: () async {
+                                //   String amountToDelete = entry['amount']!;
+                                //   String monthToDelete = entry['month']!;
+                                //   String categoryToDelete = entry['category']!;
+
+                                //   await tableDb.deleteEntry(amountToDelete,
+                                //       monthToDelete, categoryToDelete);
+                                //   fetchData();
+
+                                //   setState(() {
+                                //     enteredvalues
+                                //         .remove(entry); // Remove the selected entry
+                                //   });
+                                // },
+                                onTap: () async {
+                                  ////////
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      content: Text(
+                                        "Are you sure?",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        "This will delete the whole Row",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(
+                                            "No",
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            String amountToDelete =
+                                                entry['amount']!;
+                                            String monthToDelete =
+                                                entry['month']!;
+                                            String categoryToDelete =
+                                                entry['category']!;
+                                            String yearToDelete =
+                                                entry['year']!;
+
+                                            await tableDb.deleteEntry(
+                                                amountToDelete,
+                                                monthToDelete,
+                                                categoryToDelete,
+                                                yearToDelete);
+                                            fetchData();
+
+                                            setState(() {
+                                              enteredvalues.remove(
+                                                  entry); // Remove the selected entry
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(
+                                            "Yes",
+                                            style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 18),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'delete',
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: buttonSize),
+                                ),
+                              )
+                            ],
+                          )),
+                        ]);
+                      }).toList(),
+                    ),
             ],
           ),
         ),
@@ -711,36 +829,255 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
     ));
   }
 
+  // void _showEditDialog(Map<String, String> entry, int index) {
+  //   final TextEditingController amountController =
+  //       TextEditingController(text: entry['amount']);
+  //   final TextEditingController startDateController =
+  //       TextEditingController(text: entry['month']);
+  //   String selectedCategory = entry['category'] ?? '';
+  //   String editMonthValue = entry['month'] ?? '';
+  //   String editYearValue = entry['year'] ?? '';
+
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: Center(
+  //             child: Text(
+  //           "Edit your Budget Goal",
+  //           style: TextStyle(
+  //               fontSize: 20,
+  //               fontWeight: FontWeight.w600,
+  //               color: ColorConstant.defIndigo),
+  //         )),
+  //         content: StatefulBuilder(
+  //           builder: (context, setState) {
+  //             return SingleChildScrollView(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   if (dropDownMonthOrWeekValue == 'monthly') ...[
+  //                     Container(
+  //                       height: 50,
+  //                       width: 250,
+  //                       decoration: BoxDecoration(
+  //                           border: Border.all(color: Colors.grey)),
+  //                       child: DropdownButton<String>(
+  //                         underline: Container(),
+  //                         value: editMonthValue,
+  //                         items: months.map((String value) {
+  //                           return DropdownMenuItem<String>(
+  //                             value: value,
+  //                             child: Padding(
+  //                               padding: EdgeInsets.all(8),
+  //                               child: Text(value),
+  //                             ),
+  //                           );
+  //                         }).toList(),
+  //                         onChanged: (String? newValue) {
+  //                           setState(() {
+  //                             editMonthValue = newValue!;
+  //                           });
+  //                         },
+  //                       ),
+  //                     ),
+  //                     SizedBox(
+  //                       height: 20,
+  //                     ),
+  //                     Container(
+  //                       height: 50,
+  //                       width: 250,
+  //                       decoration: BoxDecoration(
+  //                           border: Border.all(color: Colors.grey)),
+  //                       child: DropdownButton<String>(
+  //                         underline: Container(),
+  //                         value: editYearValue,
+  //                         items: numbers.map((String value) {
+  //                           return DropdownMenuItem<String>(
+  //                             value: value,
+  //                             child: Padding(
+  //                               padding: EdgeInsets.all(8.0),
+  //                               child: Text(value),
+  //                             ),
+  //                           );
+  //                         }).toList(),
+  //                         onChanged: (String? newValue) {
+  //                           setState(() {
+  //                             editYearValue = newValue!;
+  //                           });
+  //                         },
+  //                       ),
+  //                     ),
+  //                   ] else if (dropDownMonthOrWeekValue == 'weekly') ...[
+  //                     Container(
+  //                       height: 50,
+  //                       width: 250,
+  //                       decoration: BoxDecoration(
+  //                           border: Border.all(color: Colors.grey)),
+  //                       child: Padding(
+  //                         padding: EdgeInsets.all(8.0),
+  //                         child: TextField(
+  //                           controller: startDateController,
+  //                           decoration: InputDecoration(
+  //                               hintText: "Start Date",
+  //                               border: InputBorder.none),
+  //                           onTap: () async {
+  //                             FocusScope.of(context).requestFocus(FocusNode());
+  //                             await _selectDate(context, startDateController);
+  //                           },
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                   SizedBox(
+  //                     height: 20,
+  //                   ),
+  //                   Container(
+  //                     height: 50,
+  //                     width: 250,
+  //                     decoration:
+  //                         BoxDecoration(border: Border.all(color: Colors.grey)),
+  //                     child: Padding(
+  //                       padding: EdgeInsets.all(16),
+  //                       child: TextField(
+  //                         controller: amountController,
+  //                         decoration: InputDecoration(
+  //                           border: InputBorder.none,
+  //                           hintText: "Enter Amount",
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                   SizedBox(
+  //                     height: 20,
+  //                   ),
+  //                   Consumer<CategoryProvider>(
+  //                     builder: (context, categoryProvider, child) {
+  //                       bool categoriesAvailable =
+  //                           categoryProvider.categories.isNotEmpty;
+  //                       return Container(
+  //                         height: 50,
+  //                         width: 250,
+  //                         decoration: BoxDecoration(
+  //                             border: Border.all(color: Colors.grey)),
+  //                         child: DropdownButton<String>(
+  //                           underline: Container(),
+  //                           value: selectedCategory,
+  //                           items: categoriesAvailable
+  //                               ? categoryProvider.categories.map((category) {
+  //                                   return DropdownMenuItem<String>(
+  //                                     value: category.title,
+  //                                     child: Padding(
+  //                                       padding: EdgeInsets.all(8.0),
+  //                                       child: Text(category.title),
+  //                                     ),
+  //                                   );
+  //                                 }).toList()
+  //                               : [
+  //                                   DropdownMenuItem<String>(
+  //                                     value: 'Add categories',
+  //                                     child: InkWell(
+  //                                       onTap: () {
+  //                                         Navigator.push(
+  //                                           context,
+  //                                           MaterialPageRoute(
+  //                                             builder: (context) =>
+  //                                                 CategoriesScreen(),
+  //                                           ),
+  //                                         );
+  //                                       },
+  //                                       child: Text('Add categories'),
+  //                                     ),
+  //                                   ),
+  //                                 ],
+  //                           onChanged: categoriesAvailable
+  //                               ? (String? newValue) {
+  //                                   setState(() {
+  //                                     selectedCategory = newValue!;
+  //                                   });
+  //                                 }
+  //                               : null,
+  //                         ),
+  //                       );
+  //                     },
+  //                   ),
+  //                 ],
+  //               ),
+  //             );
+  //           },
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text("Cancel"),
+  //           ),
+  //           TextButton(
+  //             onPressed: () async {
+  //               // Map<String, String> updatedEntry = {
+  //               //   'amount': amountController.text,
+  //               //   'month': dropDownMonthOrWeekValue == 'monthly'
+  //               //       ? "$editMonthValue $editYearValue"
+  //               //       : startDateController.text,
+  //               //   'category': selectedCategory,
+  //               // };
+  //               // int idToUpdate = index;
+  //               // print('Updating entry: $updatedEntry'); // Debugging
+  //               // await TableDb().updateEntry(idToUpdate, updatedEntry);
+  //               // setState(() {
+  //               //   enteredvalues[index] = updatedEntry;
+  //               // });
+  //               // // setState(() {
+  //               // //   // Update local UI state
+  //               // //   if (index >= 0 && index < enteredvalues.length) {
+  //               // //     enteredvalues[index] = updatedEntry;
+  //               // //   } else {
+  //               // //     print('Error: Index out of range for updating entry');
+  //               // //   }
+  //               // // });
+
+  //               // Navigator.of(context).pop(); // Close the edit dialog
+
+  //               // // // Update the local state
+  //               // // setState(() {
+  //               // //   enteredvalues[index] = entry;
+  //               // // });
+  //               Map<String, String> updatedEntry = {
+  //                 'amount': amountController.text,
+  //                 'month': dropDownMonthOrWeekValue == 'monthly'
+  //                     ? editMonthValue
+  //                     : startDateController.text,
+  //                 'year': dropDownMonthOrWeekValue == 'monthly'
+  //                     ? editYearValue
+  //                     : "",
+  //                 'category': selectedCategory,
+  //               };
+  //               await TableDb().updateEntry(index, updatedEntry);
+  //               setState(() {
+  //                 enteredvalues[index] = updatedEntry;
+  //               });
+  //               Navigator.of(context).pop(); // Close the edit dialog
+  //             },
+  //             child: Text("Save"),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   void _showEditDialog(Map<String, String> entry, int index) {
-    if (entry == null) {
-      print('Error: Entry is null');
-      return;
-    }
-
-    if (index < 0 || index >= enteredvalues.length) {
-      print(
-          'Error: Index out of range. Index: $index, List length: ${enteredvalues.length}');
-      return;
-    }
-
-    // Add logging to track entry and index
-    print('Showing edit dialog for entry: $entry with index: $index');
-    print('Current dropDownMonthOrWeekValue: $dropDownMonthOrWeekValue');
     final TextEditingController amountController =
         TextEditingController(text: entry['amount']);
     final TextEditingController startDateController =
         TextEditingController(text: entry['month']);
+    final TextEditingController yearController =
+        TextEditingController(text: entry['year'] ?? 'N/A');
     String selectedCategory = entry['category'] ?? '';
-    String editMonthValue =
-        entry['month']!.split(' ')[0]; // Initialize with month part
-    String editYearValue =
-        entry['month']!.split(' ')[1]; // Initialize with year part
-    // Check if entry is valid for weekly data
-    if (dropDownMonthOrWeekValue == 'Weekly' &&
-        startDateController.text.isEmpty) {
-      print('Error: Start date is empty for weekly entry');
-      return;
-    }
+    String editMonthValue = entry['month'] ?? '';
+    String editYearValue = entry['year'] ?? '';
+
     showDialog(
       context: context,
       builder: (context) {
@@ -761,8 +1098,10 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                   children: [
                     if (dropDownMonthOrWeekValue == 'monthly') ...[
                       Container(
-                        height: 50,
-                        width: 250,
+                        height:
+                            MediaQuery.of(context).size.width < 600 ? 50 : 70,
+                        width:
+                            MediaQuery.of(context).size.width < 600 ? 250 : 300,
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey)),
                         child: DropdownButton<String>(
@@ -812,6 +1151,7 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                         ),
                       ),
                     ] else if (dropDownMonthOrWeekValue == 'weekly') ...[
+                      // For Weekly Entries
                       Container(
                         height: 50,
                         width: 250,
@@ -921,32 +1261,18 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                 Map<String, String> updatedEntry = {
                   'amount': amountController.text,
                   'month': dropDownMonthOrWeekValue == 'monthly'
-                      ? "$editMonthValue $editYearValue"
+                      ? editMonthValue
                       : startDateController.text,
+                  'year': dropDownMonthOrWeekValue == 'monthly'
+                      ? editYearValue
+                      : 'N/A',
                   'category': selectedCategory,
                 };
-                int idToUpdate = index;
-                print('Updating entry: $updatedEntry'); // Debugging
-                await TableDb().updateEntry(idToUpdate, updatedEntry);
-                // setState(() {
-                //   // Update local UI state
-                //   enteredvalues[index] = updatedEntry;
-                // });
+                await TableDb().updateEntry(index, updatedEntry);
                 setState(() {
-                  // Update local UI state
-                  if (index >= 0 && index < enteredvalues.length) {
-                    enteredvalues[index] = updatedEntry;
-                  } else {
-                    print('Error: Index out of range for updating entry');
-                  }
+                  enteredvalues[index] = updatedEntry;
                 });
-
                 Navigator.of(context).pop(); // Close the edit dialog
-
-                // // Update the local state
-                // setState(() {
-                //   enteredvalues[index] = entry;
-                // });
               },
               child: Text("Save"),
             ),
