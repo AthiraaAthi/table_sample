@@ -51,6 +51,20 @@ class CategoryDatabase {
         where: 'id = ?', whereArgs: [category.id]);
   }
 
+  Future<List<Category>> getCategoryById(String categoryId) async {
+    // Get a reference to the database
+    final db = await database;
+
+    // Query the database for categories with the given ID
+    final List<Map<String, dynamic>> maps = await db
+        .rawQuery('SELECT * FROM categories WHERE id = ?', [categoryId]);
+
+    // Generate and return a list of Category objects from the query results
+    return List.generate(maps.length, (i) {
+      return Category.fromMap(maps[i]);
+    });
+  }
+
   Future<List<Category>> getCategories() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('categories');
