@@ -2,7 +2,9 @@ import 'package:drp_dwn_check/view/table.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key});
+  const Home({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

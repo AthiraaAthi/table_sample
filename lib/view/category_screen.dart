@@ -300,16 +300,18 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                   Provider.of<CategoryProvider>(
                                                       context,
                                                       listen: false);
-                                              categoryProvider.addCategory(
-                                                Category(
-                                                  title: titleController.text,
-                                                  description:
-                                                      desController.text,
-                                                  colorName: selectedColorName,
-                                                ),
+                                              final newCategory = Category(
+                                                id: 0,
+                                                title: titleController.text,
+                                                description: desController.text,
+                                                colorName: selectedColorName,
                                               );
 
-                                              Navigator.pop(context);
+                                              categoryProvider
+                                                  .addCategory(newCategory);
+
+                                              Navigator.pop(context,
+                                                  newCategory.id.toString());
                                               titleController.clear();
                                               desController.clear();
                                               // selectedColorName = "Green"; ////////////////

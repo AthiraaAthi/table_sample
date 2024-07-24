@@ -51,6 +51,7 @@ class CategoryDatabase {
         where: 'id = ?', whereArgs: [category.id]);
   }
 
+////on july23 function
   Future<List<Category>> getCategoryById(String categoryId) async {
     // Get a reference to the database
     final db = await database;

@@ -31,6 +31,7 @@ class CategoryProvider with ChangeNotifier {
     await loadCategories();
   }
 
+////july 23 function
   Future<List<Category>> categoryById(String id) async {
     List<Category> mp = await CategoryDatabase().getCategoryById(id);
     return mp;
