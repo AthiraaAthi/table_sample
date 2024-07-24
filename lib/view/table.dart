@@ -563,21 +563,19 @@ class _BudgetGoalScreenState extends State<BudgetGoalScreen> {
                                         List<Category> categoryList =
                                             categoryProvider.categories;
                                         setState(() {
-                                          //categorydropdownValue = value!;
-
-                                          // for (int i = 0;
-                                          //     i < categoryList.length;
-                                          //     i++) {
-                                          //   //iterating over the categry list
-                                          //   if (categoryList[i].title.compareTo(
-                                          //           value.toString()) ==
-                                          //       0) {
-                                          //     selectedCategory =
-                                          //         categoryList[i].id.toString();
-                                          //     break;
-                                          //   } //checking if the title is alrdy in the table
-                                          // }
-                                          selectedCategory = value!;
+                                          for (int i = 0;
+                                              i < categoryList.length;
+                                              i++) {
+                                            //iterating over the categry list
+                                            if (categoryList[i].title.compareTo(
+                                                    value.toString()) ==
+                                                0) {
+                                              selectedCategory =
+                                                  categoryList[i].id.toString();
+                                              break;
+                                            } //checking if the title is alrdy in the table
+                                          }
+                                          // selectedCategory = value!;
                                         });
                                       }
                                     : null,
